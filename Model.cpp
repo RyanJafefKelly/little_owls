@@ -31,7 +31,6 @@ Individual* Model::runSimulation(std::vector<double> currentParameters,
 		double cellresolution){
 
 	// create individual
-    std::cout << "in model" << std::endl;
 	Individual *ind = new Individual(currentParameters, timeAtObservation,
 			startTime, startDoy, solarLatitude, solarLongitude, cellresolution);
 	// run steps for individual

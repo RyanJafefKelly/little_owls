@@ -14,7 +14,7 @@ Individual::Individual(std::vector<double> currentParameters,
 		double solarLat,
 		double solarLon,
 		double res) {
-    std::cout << "ind1" << std::endl;
+    // std::cout << "ind1" << std::endl;
 
 	cellres = res;
 	sol = new Solar(solarLat, solarLon);
@@ -49,7 +49,7 @@ Individual::Individual(std::vector<double> currentParameters,
 	maximumEffort = currentParameters.at(8);
 
 	roostLambda = currentParameters.at(9);
-    std::cout << "ind2" << std::endl;
+    // std::cout << "ind2" << std::endl;
 	if(!tObs.empty()){
 		observationModel = true;
 		observationError = currentParameters.at(10);
@@ -63,7 +63,7 @@ Individual::Individual(std::vector<double> currentParameters,
 
 	validityCode = 0;
 
-    std::cout << "ind3" << std::endl;
+    // std::cout << "ind3" << std::endl;
 	// TODO Auto-generated constructor stub
 
 }
@@ -87,7 +87,7 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
         // std::cout << "is observation model" << std::endl;
 		maximumDuration = tObs.at(tObs.size()-1);
 	}
-    std::cout << "ind4" << std::endl;
+    // std::cout << "ind4" << std::endl;
 	// scanning:
 	// create array with Number of vertical cells along horizontal axis
 
@@ -100,20 +100,20 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 
 		NumberOfCells += 2 * oppositeLegs[subscript] + 1;
 	}
-    std::cout << "ind5" << std::endl;
+    // std::cout << "ind5" << std::endl;
 	// fill in starting conditions
 
 	// calculate sunrise and sunset times
 	sol->solarcalc(doy, -25.0, 25.0);
-    std::cout << "ind5.2" << std::endl;
+    // std::cout << "ind5.2" << std::endl;
 	// evaluate starting activity status
 	updateActivity();
-    std::cout << "ind5.3" << std::endl;
+    // std::cout << "ind5.3" << std::endl;
 	// additional start point states
 	// envVal.push_back(mooreEnv(env, x.at(0), y.at(0)));
     // envVal.push_back(env->habitat->at(0).at(0));
     envVal.push_back(env->habitat->at(y.at(0)).at(x.at(0)));
-    std::cout << "ind6" << std::endl;
+    // std::cout << "ind6" << std::endl;
 	if(!active){
 		// only day rest
 		activitystatus.push_back(1);
@@ -124,7 +124,7 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 		activitystatus.push_back(0);
 		timestamp.push_back(0.0);
 	}
-    std::cout << "ind7" << std::endl;
+    // std::cout << "ind7" << std::endl;
 	time.push_back(daytime);
 
 	// start moving
@@ -311,7 +311,7 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 		}
 	// end iteration loop
 	}
-    std::cout << "ind8" << std::endl;
+    // std::cout << "ind8" << std::endl;
 	if(observationModel){
 		// run Observation model
 		observe(ranGen, env);

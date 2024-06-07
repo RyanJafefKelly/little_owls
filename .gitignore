@@ -4,3 +4,28 @@ habitatSuitability_scaled_20_new.txt
 habitatSuitability_scaled_20_new_bin.bin
 vcpkg/
 CMakeFiles/
+# Object files
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Dynamic and Static Libraries
+*.so
+*.dylib
+*.lib
+
+# Executable files
+*.exe
+*.out
+
+# Build folders
+build/
+bin/
+
+# Other files you might not want to include
+*.log
+*.tmp
+

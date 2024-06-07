@@ -133,11 +133,11 @@ template<typename datatype>
 class Ndarray<datatype, 1>
 {
     private:
-        datatype *data;
         long *shape;
         long *strides;
         
     public:
+        datatype *data;  // todo ryan change
         Ndarray(datatype *data, long *shape, long *strides);
         Ndarray(const Ndarray<datatype, 1>& array);
         Ndarray(const numpyArray<datatype>& array);
