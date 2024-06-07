@@ -6,6 +6,7 @@
  */
 
 #include "Individual.h"
+#include <fstream>
 
 Individual::Individual(std::vector<double> currentParameters,
 		std::vector<unsigned int> Observationtime,
@@ -75,7 +76,8 @@ Individual::~Individual() {
 // move (steps)
 void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env, RandomGenerator ranGen){
 
-  // initiate gamma step length distribution
+        std::ofstream debug_file("debug_output_move.txt");
+	// initiate gamma step length distribution
 	boost::math::gamma_distribution<double> stepDistr(stepShape, stepScale);
 	int perceptionRange = (int) ceil(quantile(stepDistr, 0.95));
 
@@ -87,7 +89,7 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
         // std::cout << "is observation model" << std::endl;
 		maximumDuration = tObs.at(tObs.size()-1);
 	}
-    // std::cout << "ind4" << std::endl;
+        debug_file << "ind4" << std::endl;
 	// scanning:
 	// create array with Number of vertical cells along horizontal axis
 
@@ -100,20 +102,20 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 
 		NumberOfCells += 2 * oppositeLegs[subscript] + 1;
 	}
-    // std::cout << "ind5" << std::endl;
+        debug_file << "ind5" << std::endl;
 	// fill in starting conditions
 
 	// calculate sunrise and sunset times
 	sol->solarcalc(doy, -25.0, 25.0);
-    // std::cout << "ind5.2" << std::endl;
+        debug_file << "ind5.2" << std::endl;
 	// evaluate starting activity status
 	updateActivity();
-    // std::cout << "ind5.3" << std::endl;
+        debug_file << "ind5.3" << std::endl;
 	// additional start point states
 	// envVal.push_back(mooreEnv(env, x.at(0), y.at(0)));
     // envVal.push_back(env->habitat->at(0).at(0));
     envVal.push_back(env->habitat->at(y.at(0)).at(x.at(0)));
-    // std::cout << "ind6" << std::endl;
+        debug_file << "ind6" << std::endl;
 	if(!active){
 		// only day rest
 		activitystatus.push_back(1);
@@ -124,7 +126,7 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 		activitystatus.push_back(0);
 		timestamp.push_back(0.0);
 	}
-    // std::cout << "ind7" << std::endl;
+        debug_file << "ind7" << std::endl;
 	time.push_back(daytime);
 
 	// start moving
@@ -311,7 +313,7 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 		}
 	// end iteration loop
 	}
-    // std::cout << "ind8" << std::endl;
+        debug_file << "ind8" << std::endl;
 	if(observationModel){
 		// run Observation model
 		observe(ranGen, env);
@@ -321,6 +323,8 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 
 void Individual::observe(RandomGenerator ranGen, Environment *env){
 	// states at position 0 for both simulated and observed time
+	std::ofstream debug_file("debug_output_observe.txt");
+        debug_file << "Observe 1" << std::endl;
 	xObs.push_back(x.at(0));
 	yObs.push_back(y.at(0));
 	envValObs.push_back(envVal.at(0));
@@ -331,20 +335,26 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 	unsigned int match = 1; // loop: start check at position 1 in simulated time
 	int currentDoy;
 	double currentDaytime;
-
 	// states along tObs
+	debug_file << "Size " << tObs.size() << std::endl;
 	for(unsigned int obs = 1; obs < tObs.size(); obs++){
 		// match observed and simulated time
+		//     // Debug: Log each iteration's index and any relevant data
+                debug_file << "Iteration " << obs << std::endl;
+
 		match = locate(tObs.at(obs), match);
 		// get states at match
 		if(activitystatus.at(match) < 2){ // day rest or active dispersal
+	                debug_file << "If (a)" << std::endl;
 			xObs.push_back(x.at(match) + ranGen.rGaussian(0, observationError));
 			yObs.push_back(y.at(match) + ranGen.rGaussian(0, observationError));
 		}else{ // if real roosting
 			// calculate daytime and doy
+			debug_file << "If (b)" << std::endl;
 			currentDoy = startDoy + (int)(tObs.at(obs)/(24*60));
 			currentDaytime = startDaytime + (tObs.at(obs) - (currentDoy - startDoy)*24*60);
 			if(currentDaytime > 24*60){
+				debug_file << "If (c)" << std::endl;
 				currentDaytime -= 24*60;
 				currentDoy += 1;
 			}
@@ -352,9 +362,11 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 			sol->solarcalc(currentDoy, -25.0, 25.0);
 
 			if(currentDaytime > sol->sunrise && currentDaytime < sol->sunset){ // day rest
+					debug_file << "If (d)" << std::endl;
 					xObs.push_back(x.at(match) + ranGen.rGaussian(0, observationError));
 					yObs.push_back(y.at(match) + ranGen.rGaussian(0, observationError));
 				}else{ // night roost
+				        debug_file << "If (e)" << std::endl;
 					xObs.push_back(x.at(match) + ranGen.rGaussian(0, observationError + 50/cellres));
 					yObs.push_back(y.at(match) + ranGen.rGaussian(0, observationError + 50/cellres));
 				}
@@ -364,7 +376,8 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 			 xObs.at(obs) >= (int) (env->habitat->at(0).size() - 1) ||
 			 yObs.at(obs) <= 2 ||
 			 yObs.at(obs) >= (int) (env->habitat->size() - 1)){
-    		envValObs.push_back(NAN);
+    		debug_file << "If (f)" << std::endl;
+			envValObs.push_back(NAN);
 		}
         // else{
 			//envValObs.push_back(mooreEnv(env, xObs.at(obs), yObs.at(obs)));
@@ -375,8 +388,10 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 		   xObs.at(obs) >= (int) (env->habitat->at(0).size() - rscRange) ||
 		   yObs.at(obs) <= rscRange+1 ||
 		   yObs.at(obs) >= (int) (env->habitat->size() - rscRange)){
-		  rsc.push_back(NAN);
+		  debug_file << "If (g)" << std::endl;
+			rsc.push_back(NAN);
 		}else{
+		debug_file << "If (h)" << std::endl;
 		  rsc.push_back(rsc_calc(env, xObs.at(obs), yObs.at(obs)));
 		}
 		// step distance
@@ -384,6 +399,7 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 										pow(yObs.at(obs) - yObs.at(obs-1), 2)));
 		// turning Angle
 		if((obs) > 1){ // turning angle from third step on in hindsight
+			debug_file << "If (i)" << std::endl;
 			double preVec[2] = {(double) (xObs.at(obs-1) - xObs.at(obs - 2)), (double) (yObs.at(obs-1) - yObs.at(obs - 2))};
 			double curVec[2] = {(double) (xObs.at(obs) - xObs.at(obs-1)), (double) (yObs.at(obs) - yObs.at(obs-1))};
 			double TAO = acos((curVec[0] * preVec[0] + curVec[1] * preVec[1]) /
@@ -400,6 +416,7 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 
 		// for validity code = 2, not entirely consumed observations
 		if(match == numberOfSteps - 1){
+			debug_file << "If - END" << std::endl;
 			obs = tObs.size(); // end loop
 		}
 	}
