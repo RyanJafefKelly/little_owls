@@ -1,9 +1,3 @@
-habitatSuitability_scaled_20.tif
-habitatSuitability_scaled_20.txt
-habitatSuitability_scaled_20_new.txt
-habitatSuitability_scaled_20_new_bin.bin
-vcpkg/
-CMakeFiles/
 # Object files
 *.o
 *.obj
@@ -28,4 +22,29 @@ bin/
 # Other files you might not want to include
 *.log
 *.tmp
+
+# Specific project files and directories
+habitatSuitability_scaled_20.tif
+habitatSuitability_scaled_20.txt
+habitatSuitability_scaled_20_new.txt
+habitatSuitability_scaled_20_new_bin.bin
+
+# Dependency directories
+vcpkg/
+
+# CMake generated files and folders
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+*.cmake
+
+# Temporary and auto-generated files
+*.out.txt
+.DS_Store
+
+# Python environments
+.venv/
+
+# Editor directories
+.vscode/
 
