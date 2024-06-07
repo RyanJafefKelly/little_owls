@@ -1,6 +1,3 @@
-[submodule "TinyTIFF"]
-	path = TinyTIFF
-	url = git@github.com:jkriege2/TinyTIFF.git
 [submodule "external/TinyTIFF"]
 	path = external/TinyTIFF
 	url = git@github.com:jkriege2/TinyTIFF.git
