@@ -425,6 +425,9 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 
 // locate position where observed time matches simulated time
 unsigned int Individual::locate(unsigned int targetTime, unsigned int startPosition){
+	std::ofstream debug_file("debug_output_locate.txt");
+    debug_file << "Locate 1" << std::endl;
+
 	int position;
     debug_file << "targetTime" << targetTime << std::endl;
     debug_file << "startPosition" << startPosition << std::endl;
