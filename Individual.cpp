@@ -16,7 +16,9 @@ Individual::Individual(std::vector<double> currentParameters,
 		double solarLon,
 		double res) {
     // std::cout << "ind1" << std::endl;
-
+    // set up debug file
+    std::ofstream debug_file("debug_output_individual.txt");
+    debug_file << "Observationtime size" << Observationtime.size() << std::endl;
 	cellres = res;
 	sol = new Solar(solarLat, solarLon);
 	tObs = Observationtime;
@@ -50,8 +52,10 @@ Individual::Individual(std::vector<double> currentParameters,
 	maximumEffort = currentParameters.at(8);
 
 	roostLambda = currentParameters.at(9);
+    debug_file << "roostLambda" << roostLambda << std::endl;
     // std::cout << "ind2" << std::endl;
 	if(!tObs.empty()){
+        debug_file << "is observation model" << std::endl;
 		observationModel = true;
 		observationError = currentParameters.at(10);
 	    rscRange = (int) currentParameters.at(11);
@@ -76,7 +80,7 @@ Individual::~Individual() {
 // move (steps)
 void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env, RandomGenerator ranGen){
 
-        std::ofstream debug_file("debug_output_move.txt");
+    std::ofstream debug_file("debug_output_move.txt");
 	// initiate gamma step length distribution
 	boost::math::gamma_distribution<double> stepDistr(stepShape, stepScale);
 	int perceptionRange = (int) ceil(quantile(stepDistr, 0.95));
@@ -89,7 +93,7 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
         // std::cout << "is observation model" << std::endl;
 		maximumDuration = tObs.at(tObs.size()-1);
 	}
-        debug_file << "ind4" << std::endl;
+    debug_file << "ind4" << std::endl;
 	// scanning:
 	// create array with Number of vertical cells along horizontal axis
 
@@ -313,7 +317,7 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 		}
 	// end iteration loop
 	}
-        debug_file << "ind8" << std::endl;
+    debug_file << "ind8" << std::endl;
 	if(observationModel){
 		// run Observation model
 		observe(ranGen, env);
@@ -323,8 +327,8 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 
 void Individual::observe(RandomGenerator ranGen, Environment *env){
 	// states at position 0 for both simulated and observed time
-	std::ofstream debug_file("debug_output_observe.txt");
-        debug_file << "Observe 1" << std::endl;
+	std::ofstream debug_file("debug_output_observe.txt", std::ios::app);
+    debug_file << "Observe 1" << std::endl;
 	xObs.push_back(x.at(0));
 	yObs.push_back(y.at(0));
 	envValObs.push_back(envVal.at(0));
@@ -343,6 +347,7 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
         debug_file << "Iteration " << obs << std::endl;
 
 		match = locate(tObs.at(obs), match);
+        debug_file << "Match " << match << std::endl;
 		// get states at match
 		if(activitystatus.at(match) < 2){ // day rest or active dispersal
 	                debug_file << "If (a)" << std::endl;
@@ -429,18 +434,25 @@ unsigned int Individual::locate(unsigned int targetTime, unsigned int startPosit
 	std::ofstream debug_file_locate("debug_output_locate.txt", std::ios::app);
     debug_file_locate << "Locate 1" << std::endl;
 
-	int position;
+	int position = -1;
     debug_file_locate << "targetTime" << targetTime << std::endl;
     debug_file_locate << "startPosition" << startPosition << std::endl;
     debug_file_locate << "numberOfSteps" << numberOfSteps << std::endl;
 
 	for(unsigned int l = startPosition; l <= numberOfSteps; l++){
-		if(timestamp.at(l) >= targetTime){
+        debug_file_locate << "l" << l << std::endl;
+        debug_file_locate << "timestamp.at(l)" << timestamp.at(l) << std::endl;
+		if(timestamp.at(l)*24*60 >= targetTime){ // RYAN: ADDED 24*60
 			position = l;
-			l = numberOfSteps; // end loop
+            l = numberOfSteps; // end loop
 		}
 	}
-    debug_file_locate << "position" << position << std::endl;
+    if (position == -1) {
+        debug_file_locate << "position: not found" << std::endl;
+        position = numberOfSteps - 1;
+    } else {
+        debug_file_locate << "position: " << position << std::endl;
+    }
     debug_file_locate.close();
 	return position;
 }

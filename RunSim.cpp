@@ -45,6 +45,7 @@ void run_sim(double habitat_preference, double step_shape, double directional_bi
     debug_file << "Debug information0" << std::endl;
     for (int i = 0; i < len_times; i++) {
         // times.at(i) <- times_nd[i];
+        debug_file << "times_nd[" << i << "] = " << times_nd[i] << std::endl;
         times.push_back(times_nd[i]);
     }
     debug_file << "Debug information1" << std::endl;

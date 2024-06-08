@@ -11,7 +11,7 @@ int run_sim_wrapper(double habitat_preference, double step_shape, double directi
          double solLon, double observation_error, int upper_left_left, int upper_left_top, unsigned long int randomSeed,
          numpyArray<unsigned int> times_numpy, numpyArray<double> envMat,
          double* result_array, int result_size) {
-    std::ofstream debug_file("debug_output_observe.txt", std::ios::app); // Opens the file for appending
+    std::ofstream debug_file("debug_output_wrapper.txt", std::ios::app); // Opens the file for appending
     try {
         run_sim(habitat_preference, step_shape, directional_bias, roost_lambda,
             environmentResolution, startT, startDoy, solLat,
