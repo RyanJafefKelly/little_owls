@@ -340,7 +340,7 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 	for(unsigned int obs = 1; obs < tObs.size(); obs++){
 		// match observed and simulated time
 		//     // Debug: Log each iteration's index and any relevant data
-                debug_file << "Iteration " << obs << std::endl;
+        debug_file << "Iteration " << obs << std::endl;
 
 		match = locate(tObs.at(obs), match);
 		// get states at match
@@ -426,12 +426,18 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 // locate position where observed time matches simulated time
 unsigned int Individual::locate(unsigned int targetTime, unsigned int startPosition){
 	int position;
+    debug_file << "targetTime" << targetTime << std::endl;
+    debug_file << "startPosition" << startPosition << std::endl;
+    debug_file << "numberOfSteps" << numberOfSteps << std::endl;
+
 	for(unsigned int l = startPosition; l <= numberOfSteps; l++){
 		if(timestamp.at(l) >= targetTime){
 			position = l;
 			l = numberOfSteps; // end loop
 		}
 	}
+    debug_file << "position" << position << std::endl;
+
 	return position;
 }
 
