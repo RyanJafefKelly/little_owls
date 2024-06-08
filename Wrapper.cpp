@@ -28,8 +28,6 @@ int run_sim_wrapper(double habitat_preference, double step_shape, double directi
     } catch (...) {
         debug_file << "Unknown exception occurred." << std::endl;
         return 3;
-    } finally {
-        debug_file.close(); // Ensure the file is properly closed after writing
     }
 }
 
