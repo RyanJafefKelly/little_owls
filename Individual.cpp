@@ -421,17 +421,18 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 			obs = tObs.size(); // end loop
 		}
 	}
+    debug_file.close();
 }
 
 // locate position where observed time matches simulated time
 unsigned int Individual::locate(unsigned int targetTime, unsigned int startPosition){
-	std::ofstream debug_file("debug_output_locate.txt");
-    debug_file << "Locate 1" << std::endl;
+	std::ofstream debug_file_locate("debug_output_locate.txt", std::ios::app);
+    debug_file_locate << "Locate 1" << std::endl;
 
 	int position;
-    debug_file << "targetTime" << targetTime << std::endl;
-    debug_file << "startPosition" << startPosition << std::endl;
-    debug_file << "numberOfSteps" << numberOfSteps << std::endl;
+    debug_file_locate << "targetTime" << targetTime << std::endl;
+    debug_file_locate << "startPosition" << startPosition << std::endl;
+    debug_file_locate << "numberOfSteps" << numberOfSteps << std::endl;
 
 	for(unsigned int l = startPosition; l <= numberOfSteps; l++){
 		if(timestamp.at(l) >= targetTime){
@@ -439,8 +440,8 @@ unsigned int Individual::locate(unsigned int targetTime, unsigned int startPosit
 			l = numberOfSteps; // end loop
 		}
 	}
-    debug_file << "position" << position << std::endl;
-
+    debug_file_locate << "position" << position << std::endl;
+    debug_file_locate.close();
 	return position;
 }
 
