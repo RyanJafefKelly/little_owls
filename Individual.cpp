@@ -16,9 +16,9 @@ Individual::Individual(std::vector<double> currentParameters,
 		double solarLon,
 		double res) {
     // std::cout << "ind1" << std::endl;
-    // set up debug file
-    std::ofstream debug_file("debug_output_individual.txt");
-    debug_file << "Observationtime size" << Observationtime.size() << std::endl;
+    // set up //debug file
+    // std::ofstream //debug_file("//debug_output_individual.txt");
+    // //debug_file << "Observationtime size" << Observationtime.size() << std::endl;
 	cellres = res;
 	sol = new Solar(solarLat, solarLon);
 	tObs = Observationtime;
@@ -52,10 +52,10 @@ Individual::Individual(std::vector<double> currentParameters,
 	maximumEffort = currentParameters.at(8);
 
 	roostLambda = currentParameters.at(9);
-    debug_file << "roostLambda" << roostLambda << std::endl;
+    //debug_file << "roostLambda" << roostLambda << std::endl;
     // std::cout << "ind2" << std::endl;
 	if(!tObs.empty()){
-        debug_file << "is observation model" << std::endl;
+        //debug_file << "is observation model" << std::endl;
 		observationModel = true;
 		observationError = currentParameters.at(10);
 	    rscRange = (int) currentParameters.at(11);
@@ -80,7 +80,7 @@ Individual::~Individual() {
 // move (steps)
 void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env, RandomGenerator ranGen){
 
-    std::ofstream debug_file("debug_output_move.txt");
+    // std::ofstream //debug_file("//debug_output_move.txt", std::ios::app);
 	// initiate gamma step length distribution
 	boost::math::gamma_distribution<double> stepDistr(stepShape, stepScale);
 	int perceptionRange = (int) ceil(quantile(stepDistr, 0.95));
@@ -93,7 +93,9 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
         // std::cout << "is observation model" << std::endl;
 		maximumDuration = tObs.at(tObs.size()-1);
 	}
-    debug_file << "ind4" << std::endl;
+
+    //debug_file << "maximumDuration" << maximumDuration << std::endl;
+    //debug_file << "ind4" << std::endl;
 	// scanning:
 	// create array with Number of vertical cells along horizontal axis
 
@@ -106,20 +108,20 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 
 		NumberOfCells += 2 * oppositeLegs[subscript] + 1;
 	}
-        debug_file << "ind5" << std::endl;
+        //debug_file << "ind5" << std::endl;
 	// fill in starting conditions
 
 	// calculate sunrise and sunset times
 	sol->solarcalc(doy, -25.0, 25.0);
-        debug_file << "ind5.2" << std::endl;
+        //debug_file << "ind5.2" << std::endl;
 	// evaluate starting activity status
 	updateActivity();
-        debug_file << "ind5.3" << std::endl;
+        //debug_file << "ind5.3" << std::endl;
 	// additional start point states
 	// envVal.push_back(mooreEnv(env, x.at(0), y.at(0)));
     // envVal.push_back(env->habitat->at(0).at(0));
     envVal.push_back(env->habitat->at(y.at(0)).at(x.at(0)));
-        debug_file << "ind6" << std::endl;
+        //debug_file << "ind6" << std::endl;
 	if(!active){
 		// only day rest
 		activitystatus.push_back(1);
@@ -130,21 +132,30 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 		activitystatus.push_back(0);
 		timestamp.push_back(0.0);
 	}
-        debug_file << "ind7" << std::endl;
+        //debug_file << "ind7" << std::endl;
 	time.push_back(daytime);
 
 	// start moving
 	//
+    //debug_file << "nSteps" << nSteps << std::endl;
 	for(unsigned int iter = 0; iter < nSteps; iter++){
 		// check if still within range of environment
-		if((iter - perceptionRange) <= 2 ||
+        //debug_file << "iter" << iter << std::endl;
+		if((x.at(iter) - perceptionRange) <= 2 ||
 			(x.at(iter) + perceptionRange) >= (int) (env->habitat->at(0).size() - 1) ||
 			(y.at(iter) - perceptionRange) <= 2 ||
 			(y.at(iter) + perceptionRange) >= (int) (env->habitat->size() - 1)){
 			//
+            //debug_file << "perceptionRange" << perceptionRange << std::endl;
+            //debug_file << "(iter - perceptionRange)" << (iter - perceptionRange) << std::endl;
+            //debug_file << "x.at(iter) + perceptionRange" << (x.at(iter) + perceptionRange) << std::endl;
+            //debug_file << "env->habitat->at(0).size()" << env->habitat->at(0).size() << std::endl;
+            //debug_file << "(y.at(iter) + perceptionRange)" << (y.at(iter) + perceptionRange) << std::endl;
+            //debug_file << "env->habitat->size()" << env->habitat->size() << std::endl;
 			validityCode = 1;
 			numberOfSteps = iter;
 			// break out of iteration loop
+            //debug_file << "breaking out" << std::endl;
 			iter = nSteps;
 		}else{
 			// compute weights
@@ -315,9 +326,10 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 			}
 		// end range check
 		}
+
 	// end iteration loop
 	}
-    debug_file << "ind8" << std::endl;
+    //debug_file << "ind8" << std::endl;
 	if(observationModel){
 		// run Observation model
 		observe(ranGen, env);
@@ -327,8 +339,8 @@ void Individual::move(unsigned int nSteps, int maximumDuration, Environment *env
 
 void Individual::observe(RandomGenerator ranGen, Environment *env){
 	// states at position 0 for both simulated and observed time
-	std::ofstream debug_file("debug_output_observe.txt", std::ios::app);
-    debug_file << "Observe 1" << std::endl;
+	// std::ofstream //debug_file("//debug_output_observe.txt", std::ios::app);
+    //debug_file << "Observe 1" << std::endl;
 	xObs.push_back(x.at(0));
 	yObs.push_back(y.at(0));
 	envValObs.push_back(envVal.at(0));
@@ -340,26 +352,26 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 	int currentDoy;
 	double currentDaytime;
 	// states along tObs
-	debug_file << "Size " << tObs.size() << std::endl;
+	//debug_file << "Size " << tObs.size() << std::endl;
 	for(unsigned int obs = 1; obs < tObs.size(); obs++){
 		// match observed and simulated time
-		//     // Debug: Log each iteration's index and any relevant data
-        debug_file << "Iteration " << obs << std::endl;
+		//     // //debug: Log each iteration's index and any relevant data
+        //debug_file << "Iteration " << obs << std::endl;
 
 		match = locate(tObs.at(obs), match);
-        debug_file << "Match " << match << std::endl;
+        //debug_file << "Match " << match << std::endl;
 		// get states at match
 		if(activitystatus.at(match) < 2){ // day rest or active dispersal
-	                debug_file << "If (a)" << std::endl;
+	                //debug_file << "If (a)" << std::endl;
 			xObs.push_back(x.at(match) + ranGen.rGaussian(0, observationError));
 			yObs.push_back(y.at(match) + ranGen.rGaussian(0, observationError));
 		}else{ // if real roosting
 			// calculate daytime and doy
-			debug_file << "If (b)" << std::endl;
+			//debug_file << "If (b)" << std::endl;
 			currentDoy = startDoy + (int)(tObs.at(obs)/(24*60));
 			currentDaytime = startDaytime + (tObs.at(obs) - (currentDoy - startDoy)*24*60);
 			if(currentDaytime > 24*60){
-				debug_file << "If (c)" << std::endl;
+				//debug_file << "If (c)" << std::endl;
 				currentDaytime -= 24*60;
 				currentDoy += 1;
 			}
@@ -367,11 +379,11 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 			sol->solarcalc(currentDoy, -25.0, 25.0);
 
 			if(currentDaytime > sol->sunrise && currentDaytime < sol->sunset){ // day rest
-					debug_file << "If (d)" << std::endl;
+					//debug_file << "If (d)" << std::endl;
 					xObs.push_back(x.at(match) + ranGen.rGaussian(0, observationError));
 					yObs.push_back(y.at(match) + ranGen.rGaussian(0, observationError));
 				}else{ // night roost
-				        debug_file << "If (e)" << std::endl;
+				        //debug_file << "If (e)" << std::endl;
 					xObs.push_back(x.at(match) + ranGen.rGaussian(0, observationError + 50/cellres));
 					yObs.push_back(y.at(match) + ranGen.rGaussian(0, observationError + 50/cellres));
 				}
@@ -381,7 +393,7 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 			 xObs.at(obs) >= (int) (env->habitat->at(0).size() - 1) ||
 			 yObs.at(obs) <= 2 ||
 			 yObs.at(obs) >= (int) (env->habitat->size() - 1)){
-    		debug_file << "If (f)" << std::endl;
+    		//debug_file << "If (f)" << std::endl;
 			envValObs.push_back(NAN);
 		}
         // else{
@@ -393,10 +405,10 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 		   xObs.at(obs) >= (int) (env->habitat->at(0).size() - rscRange) ||
 		   yObs.at(obs) <= rscRange+1 ||
 		   yObs.at(obs) >= (int) (env->habitat->size() - rscRange)){
-		  debug_file << "If (g)" << std::endl;
+		  //debug_file << "If (g)" << std::endl;
 			rsc.push_back(NAN);
 		}else{
-		debug_file << "If (h)" << std::endl;
+		//debug_file << "If (h)" << std::endl;
 		  rsc.push_back(rsc_calc(env, xObs.at(obs), yObs.at(obs)));
 		}
 		// step distance
@@ -404,7 +416,7 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 										pow(yObs.at(obs) - yObs.at(obs-1), 2)));
 		// turning Angle
 		if((obs) > 1){ // turning angle from third step on in hindsight
-			debug_file << "If (i)" << std::endl;
+			// debug_file << "If (i)" << std::endl;
 			double preVec[2] = {(double) (xObs.at(obs-1) - xObs.at(obs - 2)), (double) (yObs.at(obs-1) - yObs.at(obs - 2))};
 			double curVec[2] = {(double) (xObs.at(obs) - xObs.at(obs-1)), (double) (yObs.at(obs) - yObs.at(obs-1))};
 			double TAO = acos((curVec[0] * preVec[0] + curVec[1] * preVec[1]) /
@@ -420,40 +432,40 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 		}
 
 		// for validity code = 2, not entirely consumed observations
-        debug_file << match << " " << numberOfSteps << std::endl;
+        //debug_file << match << " " << numberOfSteps << std::endl;
 		if(match == numberOfSteps - 1){
-			debug_file << "If - END" << std::endl;
+			//debug_file << "If - END" << std::endl;
 			obs = tObs.size(); // end loop
 		}
 	}
-    debug_file.close();
+    //debug_file.close();
 }
 
 // locate position where observed time matches simulated time
 unsigned int Individual::locate(unsigned int targetTime, unsigned int startPosition){
-	std::ofstream debug_file_locate("debug_output_locate.txt", std::ios::app);
-    debug_file_locate << "Locate 1" << std::endl;
+	// std::ofstream //debug_file_locate("//debug_output_locate.txt", std::ios::app);
+    //debug_file_locate << "Locate 1" << std::endl;
 
 	int position = -1;
-    debug_file_locate << "targetTime" << targetTime << std::endl;
-    debug_file_locate << "startPosition" << startPosition << std::endl;
-    debug_file_locate << "numberOfSteps" << numberOfSteps << std::endl;
+    //debug_file_locate << "targetTime" << targetTime << std::endl;
+    //debug_file_locate << "startPosition" << startPosition << std::endl;
+    //debug_file_locate << "numberOfSteps" << numberOfSteps << std::endl;
 
 	for(unsigned int l = startPosition; l <= numberOfSteps; l++){
-        debug_file_locate << "l" << l << std::endl;
-        debug_file_locate << "timestamp.at(l)" << timestamp.at(l) << std::endl;
-		if(timestamp.at(l)*24*60 >= targetTime){ // RYAN: ADDED 24*60
+        //debug_file_locate << "l" << l << std::endl;
+        //debug_file_locate << "timestamp.at(l)" << timestamp.at(l) << std::endl;
+		if(timestamp.at(l) >= targetTime){ // RYAN: ADDED 24*60
 			position = l;
             l = numberOfSteps; // end loop
 		}
 	}
     if (position == -1) {
-        debug_file_locate << "position: not found" << std::endl;
+        //debug_file_locate << "position: not found" << std::endl;
         position = numberOfSteps - 1;
     } else {
-        debug_file_locate << "position: " << position << std::endl;
+        //debug_file_locate << "position: " << position << std::endl;
     }
-    debug_file_locate.close();
+    //debug_file_locate.close();
 	return position;
 }
 

@@ -35,20 +35,20 @@ void run_sim(double habitat_preference, double step_shape, double directional_bi
          numpyArray<unsigned int> times_numpy, numpyArray<double> envMat,
          double* result_array, int result_size) {
 
-    std::ofstream debug_file("debug_output.txt");
+    // std::ofstream //debug_file("//debug_output.txt");
 
     Ndarray<double,2> environment(envMat);
 
     Ndarray<unsigned int,1> times_nd(times_numpy);
     int len_times = times_nd.getShape(0);
     std::vector<unsigned int> times;
-    debug_file << "Debug information0" << std::endl;
+    //debug_file << "//debug information0" << std::endl;
     for (int i = 0; i < len_times; i++) {
         // times.at(i) <- times_nd[i];
-        debug_file << "times_nd[" << i << "] = " << times_nd[i] << std::endl;
+        //debug_file << "times_nd[" << i << "] = " << times_nd[i] << std::endl;
         times.push_back(times_nd[i]);
     }
-    debug_file << "Debug information1" << std::endl;
+    //debug_file << "//debug information1" << std::endl;
     RandomGenerator ranGen;
 
     std::vector<double> param;
@@ -72,14 +72,14 @@ void run_sim(double habitat_preference, double step_shape, double directional_bi
     double new_obs_err = observation_error / environmentResolution;
     param.push_back(new_obs_err); // TODO: facade observationError
     param.push_back(10); // TODO: 200 (rsc range) / 20 (envres) rsc range
-    debug_file << "Debug information2" << std::endl;
+    //debug_file << "//debug information2" << std::endl;
     int nr = 5829, nc = 6489;
     std::vector<std::vector<double> > landscape_data(nr, std::vector<double> (nc));
     std::vector<std::vector<double> >* landscape = &landscape_data;
 
     auto start = high_resolution_clock::now();
     int numpy_element_size = sizeof(environment[0][0]);
-    debug_file << "Debug information3" << std::endl;
+    //debug_file << "//debug information3" << std::endl;
     // TODO: NEW APPROACH READ FROM MEMORY
     for(int r = 0; r < nr; r++){
         Ndarray<double,1> env_row = environment[r];
@@ -89,7 +89,7 @@ void run_sim(double habitat_preference, double step_shape, double directional_bi
 
         landscape_data.at(r) = landscape_row;
     }
-    debug_file << "Debug information4" << std::endl;
+    //debug_file << "//debug information4" << std::endl;
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
 
@@ -97,16 +97,16 @@ void run_sim(double habitat_preference, double step_shape, double directional_bi
 
     Model mod(landscape);
     int maxDuration = -999;
-    debug_file << "Debug information5" << std::endl;
+    //debug_file << "//debug information5" << std::endl;
     Individual* indOut = mod.runSimulation(param, 2000, maxDuration, ranGen, times,
 			startT, startDoy, solLat, solLon, environmentResolution);
-    debug_file << "Debug information6" << std::endl;
+    //debug_file << "//debug information6" << std::endl;
     int batch_size = indOut->xObs.size();
 
     for(int m = 0; m < result_size; m++) {
         result_array[m] = -1;
     }
-    debug_file << "Debug information7" << std::endl;
+    //debug_file << "//debug information7" << std::endl;
     for(int i = 0; i < times.size(); i++) {  //todo? check last
         double tstamp = times.at(i);
         double x_obs = indOut->xObs.at(i)*environmentResolution + upper_left_left;
@@ -124,18 +124,18 @@ void run_sim(double habitat_preference, double step_shape, double directional_bi
         result_array[i*7+5] = env_val_obs;
         result_array[i*7+6] = rsc;
 
-	// Debug: Print each set value
-        debug_file << "Result Array - Index: " << i << ", Values: "
-                  << tstamp << ", " << x_obs << ", " << y_obs << ", " 
-                  << step_obs << ", " << turn_angle_obs << ", " 
-                  << env_val_obs << ", " << rsc << std::endl;
+	// //debug: Print each set value
+        //debug_file << "Result Array - Index: " << i << ", Values: "
+                //   << tstamp << ", " << x_obs << ", " << y_obs << ", " 
+                //   << step_obs << ", " << turn_angle_obs << ", " 
+                //   << env_val_obs << ", " << rsc << std::endl;
 
     }
-    // Debug: Print final state of result_array
-    debug_file << "Final state of result_array:" << std::endl;
+    // //debug: Print final state of result_array
+    //debug_file << "Final state of result_array:" << std::endl;
     for(int m = 0; m < result_size; m++) {
-        debug_file << "result_array[" << m << "] = " << result_array[m] << std::endl;
+        //debug_file << "result_array[" << m << "] = " << result_array[m] << std::endl;
     }
-    debug_file.close();
+    //debug_file.close();
 }
 }
