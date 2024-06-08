@@ -415,6 +415,7 @@ void Individual::observe(RandomGenerator ranGen, Environment *env){
 		}
 
 		// for validity code = 2, not entirely consumed observations
+        debug_file << match << " " << numberOfSteps << std::endl;
 		if(match == numberOfSteps - 1){
 			debug_file << "If - END" << std::endl;
 			obs = tObs.size(); // end loop
